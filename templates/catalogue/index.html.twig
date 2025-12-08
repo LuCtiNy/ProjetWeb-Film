@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue de Films{% endblock %}
+
+{% block body %}
+<style>
+    .catalogue-wrapper {
+        margin: 2em auto;
+        max-width: 1200px;
+        width: 95%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .catalogue-wrapper h1 {
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 1em;
+        color: #333;
+    }
+    
+    .films-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2em;
+        padding: 1em 0;
+    }
+    
+    .film-card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .film-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+    }
+    
+    .film-card img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .film-info {
+        padding: 1.5em;
+    }
+    
+    .film-info h2 {
+        margin: 0 0 0.5em 0;
+        font-size: 1.4em;
+        color: #2c3e50;
+    }
+    
+    .film-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8em;
+        font-size: 0.9em;
+        color: #7f8c8d;
+    }
+    
+    .film-synopsis {
+        font-size: 0.95em;
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 1em;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .film-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5em;
+        margin-bottom: 1em;
+    }
+    
+    .genre-tag {
+        background: #3498db;
+        color: white;
+        padding: 0.3em 0.8em;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+    
+    .film-price {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #27ae60;
+        text-align: right;
+    }
+    
+    .no-films {
+        text-align: center;
+        padding: 3em;
+        font-size: 1.2em;
+        color: #7f8c8d;
+    }
+</style>
+
+<div class="catalogue-wrapper">
+    <h1>🎬 Catalogue de Films</h1>
+    
+    {% if films %}
+        <div class="films-grid">
+            {% for film in films %}
+                <div class="film-card">
+                    <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+                    <div class="film-info">
+                        <h2>{{ film.titre }}</h2>
+                        <div class="film-meta">
+                            <span>📅 {{ film.annee }}</span>
+                            <span>⏱️ {{ film.duree }} min</span>
+                        </div>
+                        <p class="film-synopsis">{{ film.synopsis }}</p>
+                        <div class="film-genres">
+                            {% set genresList = film.genres|split(',') %}
+                            {% for genre in genresList %}
+                                <span class="genre-tag">{{ genre|trim }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="film-price">{{ film.prixLocation }} €</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-films">
+            <p>Aucun film disponible pour le moment.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

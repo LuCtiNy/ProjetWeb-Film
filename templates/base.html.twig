@@ -12,6 +12,16 @@
         {% endblock %}
     </head>
     <body>
+        <header>
+            <h1>ProjetWeb</h1>
+            <nav>
+                <a href="{{ path('app_accueil') }}">Accueil</a>
+                <a href="{{ path('app_catalogue') }}">Catalogue</a>
+                <a href="{{ path('app_film_index') }}">Admin Films</a>
+            </nav>
+            <button>Connexion</button>
+            <button>Inscription</button>
+        </header>
         {% block body %}{% endblock %}
     </body>
 </html>
