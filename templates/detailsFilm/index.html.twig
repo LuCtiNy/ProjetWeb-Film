@@ -8,24 +8,26 @@
 {% endblock %}
 
 {% block body %}
-<div class="detailFilm">
-    <div class="detailFilm-wrapper">
-        <h1>Details du film</h1>
+<section class="detailFilm-principal" style="--bg-image: url('{{ asset('uploads/affiches/' ~ film.affiche) }}')">
+    <div class="detailFilm-principal-gauche">
+        <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
     </div>
-</div>
-<div class="detailFilm-content">
-    <div class="detailFilm-content-wrapper">
-        <div class="detailFilm-content-left">
-            <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
-        </div>
-        <div class="detailFilm-content-right">
-            <h2>{{ film.titre }}</h2>
-            <p>{{ film.synopsis }}</p>
-            <p>{{ film.annee }}</p>
-            <p>{{ film.duree }}</p>
-            <p>{{ film.genres }}</p>
-            <p>{{ film.prixLocation }}</p>
-        </div>
+    <div class="detailFilm-principal-droite">
+    <div class="detailFilm-principal-droite-info">
+        <h1>{{ film.titre }}</h1>
+        <p>{{ film.annee }}</p>
+        <p>{{ film.duree }}</p>
+        <p>{{ film.genres }}</p>
+        <p>{{ film.prixLocation }}</p>
+        <p>{{ film.synopsis }}</p>
     </div>
-</div>
+    <div class="detailFilm-principal-bouton">
+        <button>Louer à {{ film.prixLocation }} €</button>
+        <button>Ajouter au panier</button>
+    </div>
+    </div>
+</section>
+<section class="detailFilm-secondaire">
+
+</section>
 {% endblock %}

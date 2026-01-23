@@ -1,0 +1,100 @@
+.detailFilm-principal {
+    padding-top: 90px;
+    height: 70vh;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Blurred background effect */
+.detailFilm-principal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px);
+    transform: scale(1.1);
+    z-index: 0;
+}
+
+/* Dark overlay on top of blurred background */
+.detailFilm-principal::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85));
+    z-index: 1;
+}
+
+.detailFilm-principal-gauche {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.detailFilm-principal-gauche img {
+    height: 350px;
+    width: 250px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
+
+}
+
+.detailFilm-principal-droite {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.detailFilm-principal-droite-info {
+    width: 100%;
+}
+
+.detailFilm-principal-bouton {
+    width: 100%;
+    display: flex;
+    padding-top: 2em;
+    gap: 3em;
+}
+
+.detailFilm-principal-bouton button {
+    width: 20%;
+    padding: 0.8em;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.detailFilm-principal-bouton button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.detailFilm-secondaire {
+    padding-top: 2em;
+    height: 30vh;
+    background-color: #1a1a1a;
+}

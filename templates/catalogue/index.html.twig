@@ -50,7 +50,7 @@
                     </div>
                     <div class="prix-container">
                         <label>Prix</label>
-
+ 
                     </div>
                 </div>
             </div>
@@ -58,19 +58,20 @@
             <div class="films-grid">
                 {% for film in films %}
                     <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" style="cursor: pointer;">
+                        <div class="film-price-badge">{{ film.prixLocation }} €</div>
                         <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
                         <div class="film-info">
                         <div class="film-title-price">
                             <h2>{{ film.titre }}</h2>
-                            <span class="film-price">{{ film.prixLocation }} €</span>
                         </div>
-                            <div class="film-meta">
-                                <span>{{ film.annee }}</span><span class="dot">•</span>
-                                {% set genresList = film.genres|split(',') %}
-                                {% for genre in genresList %}
-                                    <span class="genre-tag">{{ genre|trim }}</span>
-                                {% endfor %}
-                            </div>
+                        <div class="film-meta">
+                            <span>{{ film.annee }}</span>
+                            <span class="dot">•</span>
+                            {% set genresList = film.genres|split(',') %}
+                            {% for genre in genresList %}
+                                <span class="genre-tag">{{ genre|trim }}</span>
+                            {% endfor %}
+                        </div>
                         </div>
                     </div>  
                 {% endfor %}
