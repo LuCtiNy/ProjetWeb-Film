@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-class Utilisateur
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -68,5 +70,35 @@ class Utilisateur
         $this->role = $role;
 
         return $this;
+    }
+
+    // ========== Méthodes requises par UserInterface ==========
+
+    /**
+     * Retourne l'identifiant unique de l'utilisateur (email dans notre cas)
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * Retourne les rôles de l'utilisateur
+     */
+    public function getRoles(): array
+    {
+        $roles = ['ROLE_USER'];
+
+        // Si role = 2, c'est un admin
+        if ($this->role === 2) {
+            $roles[] = 'ROLE_ADMIN';
+        }
+
+        return array_unique($roles);
+    }
+
+    public function eraseCredentials(): void
+    {
+
     }
 }

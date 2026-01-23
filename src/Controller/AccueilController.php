@@ -20,8 +20,30 @@ final class AccueilController extends AbstractController
     #[Route('/catalogue', name: 'app_catalogue')]
     public function catalogue(FilmRepository $filmRepository): Response
     {
+        $films = $filmRepository->findAll();
+        
+        // Extract unique genres from all films
+        $genres = [];
+        foreach ($films as $film) {
+            if ($film->getGenres()) {
+                $filmGenres = array_map('trim', explode(',', $film->getGenres()));
+                $genres = array_merge($genres, $filmGenres);
+            }
+        }
+        $genres = array_unique($genres);
+        sort($genres);
+
+        $annees = [];
+        foreach ($films as $film) {
+            $annees [] = $film->getAnnee();
+        }
+        $annees = array_unique($annees);
+        sort($annees);
+        
         return $this->render('catalogue/index.html.twig', [
-            'films' => $filmRepository->findAll(),
+            'films' => $films,
+            'genres' => $genres,
+            'annees' => $annees,
         ]);
     }
 
