@@ -21,8 +21,7 @@ final class AccueilController extends AbstractController
     public function catalogue(FilmRepository $filmRepository): Response
     {
         $films = $filmRepository->findAll();
-        
-        // Extract unique genres from all films
+
         $genres = [];
         foreach ($films as $film) {
             if ($film->getGenres()) {
@@ -35,16 +34,15 @@ final class AccueilController extends AbstractController
 
         $annees = [];
         foreach ($films as $film) {
-            $annees [] = $film->getAnnee();
+            $annees[] = $film->getAnnee();
         }
         $annees = array_unique($annees);
         sort($annees);
-        
+
         return $this->render('catalogue/index.html.twig', [
             'films' => $films,
             'genres' => $genres,
             'annees' => $annees,
         ]);
     }
-
 }

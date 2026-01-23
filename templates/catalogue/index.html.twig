@@ -9,74 +9,78 @@
 
 {% block body %}
 <div class="catalogue">
-<div class="catalogue-wrapper">
-    <h1>Catalogue de Films</h1>
-    <div class="filter-container">
-        <div class="searchbar">
-            <input type="text" id="search-input" placeholder="Rechercher un film...">
-            <button id="search-button">Rechercher</button>
+    <section class="catalogue-wrapper">
+        <div class="catalogue-header">
+            <h1>Catalogue de Films</h1>
         </div>
-        <div class="prixLocation">
-            <label>Trier par :</label>
-            <select id="prixLocation-select">
-                <option value="asc">Prix croissant</option>
-                <option value="desc">Prix décroissant</option>
-                <option value="asc">Date de sortie croissante</option>
-                <option value="desc">Date de sortie décroissante</option>
-                <option value="">Alphabétique</option>          
-            </select>
-        </div>
-        <div id="genre-annee-prix">
-            <div class="genre-container">
-                <label>Genre</label>
-                <select id="genre-select">
-                    <option value="">Tous les genres</option>
-                    {% for genre in genres %}
-                        <option value="{{ genre }}">{{ genre }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="annee-container">
-                <label>Année</label>
-                <select id="annee-select">
-                    <option value="">Toutes les années</option>
-                    {% for annee in annees %}
-                        <option value="{{ annee }}">{{ annee }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="prix-container">
-                <label>Prix</label>
-
-            </div>
-        </div>
-    </div>
-    {% if films %}
-        <div class="films-grid">
-            {% for film in films %}
-                <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" style="cursor: pointer;">
-                    <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
-                    <div class="film-info">
-                    <div class="film-title-price">
-                        <h2>{{ film.titre }}</h2>
-                        <span class="film-price">{{ film.prixLocation }} €</span>
-                    </div>
-                        <div class="film-meta">
-                            <span>{{ film.annee }}</span><span class="dot">•</span>
-                            {% set genresList = film.genres|split(',') %}
-                            {% for genre in genresList %}
-                                <span class="genre-tag">{{ genre|trim }}</span>
+        <div class="catalogue-content">
+            <div class="filter-container">
+                <div class="searchbar">
+                    <input type="text" id="search-input" placeholder="Rechercher un film...">
+                    <button id="search-button">Rechercher</button>
+                </div>
+                <div class="prixLocation">
+                    <label>Trier par :</label>
+                    <select id="prixLocation-select">
+                        <option value="asc">Prix croissant</option>
+                        <option value="desc">Prix décroissant</option>
+                        <option value="asc">Date de sortie croissante</option>
+                        <option value="desc">Date de sortie décroissante</option>
+                        <option value="">Alphabétique</option>          
+                    </select>
+                </div>
+                <div id="genre-annee-prix">
+                    <div class="genre-container">
+                        <label>Genre</label>
+                        <select id="genre-select">
+                            <option value="">Tous les genres</option>
+                            {% for genre in genres %}
+                                <option value="{{ genre }}">{{ genre }}</option>
                             {% endfor %}
-                        </div>
+                        </select>
                     </div>
-                </div>  
-            {% endfor %}
+                    <div class="annee-container">
+                        <label>Année</label>
+                        <select id="annee-select">
+                            <option value="">Toutes les années</option>
+                            {% for annee in annees %}
+                                <option value="{{ annee }}">{{ annee }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="prix-container">
+                        <label>Prix</label>
+
+                    </div>
+                </div>
+            </div>
+        {% if films %}
+            <div class="films-grid">
+                {% for film in films %}
+                    <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" style="cursor: pointer;">
+                        <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+                        <div class="film-info">
+                        <div class="film-title-price">
+                            <h2>{{ film.titre }}</h2>
+                            <span class="film-price">{{ film.prixLocation }} €</span>
+                        </div>
+                            <div class="film-meta">
+                                <span>{{ film.annee }}</span><span class="dot">•</span>
+                                {% set genresList = film.genres|split(',') %}
+                                {% for genre in genresList %}
+                                    <span class="genre-tag">{{ genre|trim }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>  
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-films">
+                <p>Aucun film disponible pour le moment.</p>
+            </div>
+        {% endif %}
         </div>
-    {% else %}
-        <div class="no-films">
-            <p>Aucun film disponible pour le moment.</p>
-        </div>
-    {% endif %}
-</div>
+    </section>
 </div>
 {% endblock %}

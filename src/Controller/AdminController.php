@@ -10,14 +10,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/film')]
-final class FilmController extends AbstractController
+#[Route('/admin/tableauAdmin')]
+#[IsGranted('ROLE_ADMIN')]
+final class AdminController extends AbstractController
 {
-    #[Route(name: 'app_film_index', methods: ['GET'])]
+    #[Route(name: 'app_tableauAdmin_index', methods: ['GET'])]
     public function index(FilmRepository $filmRepository): Response
     {
-        return $this->render('film/index.html.twig', [
+        return $this->render('/admin/index.html.twig', [
             'films' => $filmRepository->findAll(),
         ]);
     }
@@ -33,10 +35,10 @@ final class FilmController extends AbstractController
             $entityManager->persist($film);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_film_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_tableauAdmin_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('film/new.html.twig', [
+        return $this->render('admin/new.html.twig', [
             'film' => $film,
             'form' => $form,
         ]);
@@ -45,7 +47,7 @@ final class FilmController extends AbstractController
     #[Route('/{id}', name: 'app_film_show', methods: ['GET'])]
     public function show(Film $film): Response
     {
-        return $this->render('film/show.html.twig', [
+        return $this->render('admin/show.html.twig', [
             'film' => $film,
         ]);
     }
@@ -59,10 +61,10 @@ final class FilmController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_film_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_tableauAdmin_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('film/edit.html.twig', [
+        return $this->render('admin/edit.html.twig', [
             'film' => $film,
             'form' => $form,
         ]);
@@ -71,11 +73,12 @@ final class FilmController extends AbstractController
     #[Route('/{id}', name: 'app_film_delete', methods: ['POST'])]
     public function delete(Request $request, Film $film, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$film->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$film->getId(), $request->request->get('_token'))) {
             $entityManager->remove($film);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_film_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_tableauAdmin_index', [], Response::HTTP_SEE_OTHER);
     }
+
 }
