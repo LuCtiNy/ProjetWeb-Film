@@ -14,51 +14,62 @@
             <h1>Catalogue de Films</h1>
         </div>
         <div class="catalogue-content">
-            <div class="filter-container">
+            <form action="{{ path('app_catalogue') }}" method="GET" class="filter-container">
                 <div class="searchbar">
-                    <input type="text" id="search-input" placeholder="Rechercher un film...">
-                    <button id="search-button">Rechercher</button>
+                    <input type="text" name="search" id="search-input" placeholder="Rechercher un film..." value="{{ currentSearch }}">
+                    <button type="submit" id="search-button">Rechercher</button>
                 </div>
                 <div class="prixLocation">
                     <label>Trier par :</label>
-                    <select id="prixLocation-select">
-                        <option value="asc">Prix croissant</option>
-                        <option value="desc">Prix décroissant</option>
-                        <option value="asc">Date de sortie croissante</option>
-                        <option value="desc">Date de sortie décroissante</option>
-                        <option value="">Alphabétique</option>          
+                    <select name="sort" id="prixLocation-select" onchange="this.form.submit()">
+                        <option value="id_asc" {{ currentSort == 'id_asc' ? 'selected' : '' }}>Par défaut</option>
+                        <option value="prix_asc" {{ currentSort == 'prix_asc' ? 'selected' : '' }}>Prix croissant</option>
+                        <option value="prix_desc" {{ currentSort == 'prix_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                        <option value="date_desc" {{ currentSort == 'date_desc' ? 'selected' : '' }}>Plus récents</option>
+                        <option value="alpha_asc" {{ currentSort == 'alpha_asc' ? 'selected' : '' }}>Alphabétique</option>
                     </select>
                 </div>
                 <div id="genre-annee-prix">
                     <div class="genre-container">
                         <label>Genre</label>
-                        <select id="genre-select">
+                        <select name="genre" id="genre-select" onchange="this.form.submit()">
                             <option value="">Tous les genres</option>
-                            {% for genre in genres %}
-                                <option value="{{ genre }}">{{ genre }}</option>
-                            {% endfor %}
+                            {% if genres %}
+                                {% for genre in genres %}
+                                    <option value="{{ genre }}" {{ currentGenre == genre ? 'selected' : '' }}>{{ genre }}</option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </div>
                     <div class="annee-container">
                         <label>Année</label>
-                        <select id="annee-select">
+                        <select name="annee" id="annee-select" onchange="this.form.submit()">
                             <option value="">Toutes les années</option>
-                            {% for annee in annees %}
-                                <option value="{{ annee }}">{{ annee }}</option>
-                            {% endfor %}
+                            {% if annees %}
+                                {% for annee in annees %}
+                                    <option value="{{ annee }}" {{ currentAnnee == annee ? 'selected' : '' }}>{{ annee }}</option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </div>
-                    <div class="prix-container">
-                        <label>Prix</label>
- 
-                    </div>
                 </div>
-            </div>
+            </form>
         {% if films %}
             <div class="films-grid">
                 {% for film in films %}
                     <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" style="cursor: pointer;">
-                        <div class="film-price-badge">{{ film.prixLocation }} €</div>
+                        {% if tauxPromo > 0 %}
+                            {# Promotion globale pour toute la boutique #}
+                            {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
+                            <div class="film-promo-badge">-{{ tauxPromo|round }}%</div>
+                            <div class="film-price-badge promo">
+                                <span class="prix-original">{{ film.prixLocation }}€</span>
+                                <span class="prix-promo">{{ prixPromo|number_format(2, '.', '') }}€</span>
+                            </div>
+                        {% else %}
+                            {# Pas de promotion aujourd'hui #}
+                            <div class="film-price-badge">{{ film.prixLocation }} €</div>
+                        {% endif %}
                         <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
                         <div class="film-info">
                         <div class="film-title-price">

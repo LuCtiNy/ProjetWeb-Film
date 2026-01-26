@@ -7,7 +7,6 @@
     overflow: hidden;
 }
 
-/* Blurred background effect */
 .detailFilm-principal::before {
     content: '';
     position: absolute;
@@ -23,7 +22,6 @@
     z-index: 0;
 }
 
-/* Dark overlay on top of blurred background */
 .detailFilm-principal::after {
     content: '';
     position: absolute;
@@ -59,38 +57,89 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     position: relative;
     z-index: 2;
+    padding: 2em;
+    gap: 1.5em;
 }
 
 .detailFilm-principal-droite-info {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.film-titre {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.film-metadata {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.film-synopsis {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0.5em 0 0 0;
+    max-width: 600px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .detailFilm-principal-bouton {
     width: 100%;
     display: flex;
-    padding-top: 2em;
-    gap: 3em;
+    gap: 1.5em;
+    margin-top: 0.5em;
 }
 
 .detailFilm-principal-bouton button {
-    width: 20%;
-    padding: 0.8em;
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    padding: 1em 2.5em;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-weight: 600;
+    font-size: 1.05rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    white-space: nowrap;
 }
 
-.detailFilm-principal-bouton button:hover {
+.btn-louer {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.btn-louer:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+}
+
+.btn-panier {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.btn-panier:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
 }
 
 .detailFilm-secondaire {

@@ -6,9 +6,6 @@ use App\Entity\Film;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Film>
- */
 class FilmRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,28 +13,43 @@ class FilmRepository extends ServiceEntityRepository
         parent::__construct($registry, Film::class);
     }
 
-//    /**
-//     * @return Film[] Returns an array of Film objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('f')
-//            ->andWhere('f.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('f.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function searchFilms(?string $search, ?string $genre, ?string $annee, ?string $sort = 'id_asc')
+    {
+        $qb = $this->createQueryBuilder('f');
 
-//    public function findOneBySomeField($value): ?Film
-//    {
-//        return $this->createQueryBuilder('f')
-//            ->andWhere('f.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($search) {
+            $qb->andWhere('LOWER(f.titre) LIKE LOWER(:search)')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($genre) {
+            $qb->andWhere('LOWER(f.genres) LIKE LOWER(:genre)')
+               ->setParameter('genre', '%' . $genre . '%');
+        }
+
+        if ($annee) {
+            $qb->andWhere('f.annee = :annee')
+               ->setParameter('annee', $annee);
+        }
+
+        switch ($sort) {
+            case 'prix_asc':
+                $qb->orderBy('f.prixLocation', 'ASC');
+                break;
+            case 'prix_desc':
+                $qb->orderBy('f.prixLocation', 'DESC');
+                break;
+            case 'date_desc':
+                $qb->orderBy('f.annee', 'DESC');
+                break;
+            case 'alpha_asc':
+                $qb->orderBy('f.titre', 'ASC');
+                break;
+            default:
+                $qb->orderBy('f.id', 'ASC');
+                break;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }
