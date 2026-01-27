@@ -1,50 +1,66 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Film{% endblock %}
+{% block title %}Détails du Film - Administration{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Film</h1>
+<div class="admin-wrapper">
+    <div class="admin-header">
+        <h1>Détails du Film</h1>
+        <div class="admin-actions">
+            <a href="{{ path('app_tableauAdmin_index') }}" class="btn-admin" style="background: rgba(255,255,255,0.1); color: white;">Retour à la liste</a>
+            <a href="{{ path('app_film_edit', {'id': film.id}) }}" class="btn-admin btn-primary-admin">Modifier</a>
+            {{ include('admin/_delete_form.html.twig') }}
+        </div>
+    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ film.id }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ film.titre }}</td>
-            </tr>
-            <tr>
-                <th>Annee</th>
-                <td>{{ film.annee }}</td>
-            </tr>
-            <tr>
-                <th>Duree</th>
-                <td>{{ film.duree }}</td>
-            </tr>
-            <tr>
-                <th>Synopsis</th>
-                <td>{{ film.synopsis }}</td>
-            </tr>
-            <tr>
-                <th>Genres</th>
-                <td>{{ film.genres }}</td>
-            </tr>
-            <tr>
-                <th>PrixLocation</th>
-                <td>{{ film.prixLocation }}</td>
-            </tr>
-            <tr>
-                <th>Affiche</th>
-                <td>{{ film.affiche }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_tableauAdmin_index') }}">back to list</a>
-
-    <a href="{{ path('app_film_edit', {'id': film.id}) }}">edit</a>
-
-    {{ include('admin/_delete_form.html.twig') }}
+    <div class="admin-detail-container">
+        <div class="admin-detail-image">
+            <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+        </div>
+        
+        <div class="admin-detail-info">
+            <h2>{{ film.titre }}</h2>
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <tbody>
+                        <tr>
+                            <th>ID</th>
+                            <td>#{{ film.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Année</th>
+                            <td>{{ film.annee }}</td>
+                        </tr>
+                        <tr>
+                            <th>Durée</th>
+                            <td>{{ film.duree }} minutes</td>
+                        </tr>
+                        <tr>
+                            <th>Synopsis</th>
+                            <td style="line-height: 1.6; color: var(--text-gray);">{{ film.synopsis }}</td>
+                        </tr>
+                        <tr>
+                            <th>Genres</th>
+                            <td>
+                                {% set genresList = film.genres|split(',') %}
+                                {% for genre in genresList %}
+                                    <span class="genre-tag">{{ genre|trim }}</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Prix de Location</th>
+                            <td style="color: var(--primary-color); font-weight: 700;">{{ film.prixLocation }} €</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

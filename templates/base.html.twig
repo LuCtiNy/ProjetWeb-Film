@@ -24,9 +24,15 @@
             </nav>
             <div class="auth-buttons">
                 {% if app.user %}
-                <a href="#">Compte</a>
-                <span style="margin-right: 1em;">👤 {{ app.user.email }}</span>
-                <a href="{{ path('app_logout') }}">Déconnexion</a>
+                    <div class="user-dropdown">
+                        <button class="btn-account">Compte</button>
+                        <div class="dropdown-content">
+                            <span class="user-email">{{ app.user.email }}</span>
+                            <hr>
+                            <a href="#">Favoris</a>
+                            <a href="{{ path('app_logout') }}" class="logout-link">Déconnexion</a>
+                        </div>
+                    </div>
                 {% else %}
                     <button onclick="window.location.href = '{{ path('app_login') }}'">Connexion</button>
                     <button onclick="window.location.href = '{{ path('app_register') }}'">Inscription</button>
@@ -36,5 +42,43 @@
 
         {% block body %}
         {% endblock %}
+
+        <script>
+            function initDropdown() {
+                const btnAccount = document.querySelector('.btn-account');
+                const dropdownContent = document.querySelector('.dropdown-content');
+
+                if (btnAccount && dropdownContent) {
+                    // Supprimer l'ancien listener s'il existe (pour éviter les doublons au cas où)
+                    const newBtn = btnAccount.cloneNode(true);
+                    btnAccount.parentNode.replaceChild(newBtn, btnAccount);
+
+                    newBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        dropdownContent.classList.toggle('show');
+                        newBtn.classList.toggle('active');
+                    });
+
+                    // Empêcher la fermeture si on clique dans le menu
+                    dropdownContent.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                }
+            }
+
+            // Fermer au clic ailleurs (global)
+            document.addEventListener('click', function() {
+                const btnAccount = document.querySelector('.btn-account');
+                const dropdownContent = document.querySelector('.dropdown-content');
+                if (dropdownContent && dropdownContent.classList.contains('show')) {
+                    dropdownContent.classList.remove('show');
+                    if(btnAccount) btnAccount.classList.remove('active');
+                }
+            });
+
+            // Initialiser sur le premier chargement ET sur les changements de page Turbo
+            document.addEventListener('DOMContentLoaded', initDropdown);
+            document.addEventListener('turbo:load', initDropdown);
+        </script>
     </body>
 </html>

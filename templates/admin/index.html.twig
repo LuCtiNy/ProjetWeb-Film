@@ -1,47 +1,62 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Film index{% endblock %}
+{% block title %}Gestion des Films{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Film index</h1>
+<div class="admin-wrapper">
+    <div class="admin-header">
+        <h1>Gestion des Films</h1>
+        <a href="{{ path('app_film_new') }}" class="btn-admin btn-primary-admin">+ Ajouter un film</a>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titre</th>
-                <th>Annee</th>
-                <th>Duree</th>
-                <th>Synopsis</th>
-                <th>Genres</th>
-                <th>PrixLocation</th>
-                <th>Affiche</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for film in films %}
-            <tr>
-                <td>{{ film.id }}</td>
-                <td>{{ film.titre }}</td>
-                <td>{{ film.annee }}</td>
-                <td>{{ film.duree }}</td>
-                <td>{{ film.synopsis }}</td>
-                <td>{{ film.genres }}</td>
-                <td>{{ film.prixLocation }}</td>
-                <td>{{ film.affiche }}</td>
-                <td>
-                    <a href="{{ path('app_film_show', {'id': film.id}) }}">show</a>
-                    <a href="{{ path('app_film_edit', {'id': film.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Poster</th>
+                    <th>Titre</th>
+                    <th>Année</th>
+                    <th>Genre</th>
+                    <th>Prix Loc.</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for film in films %}
+                <tr>
+                    <td>
+                        <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}" class="admin-affiche-thumb">
+                    </td>
+                    <td style="font-weight: 700;">{{ film.titre }}</td>
+                    <td>{{ film.annee }}</td>
+                    <td>
+                        {% set genresList = film.genres|split(',') %}
+                        {% for genre in genresList %}
+                            <span class="genre-tag">{{ genre|trim }}</span>
+                        {% endfor %}
+                    </td>
+                    <td style="color: var(--primary-color); font-weight: 700;">{{ film.prixLocation }} €</td>
+                    <td>
+                        <a href="{{ path('app_film_show', {'id': film.id}) }}" class="btn-admin btn-action-view">Voir</a>
+                        <a href="{{ path('app_film_edit', {'id': film.id}) }}" class="btn-admin btn-action-edit">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3em;">Aucun film trouvé dans la base.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <a href="{{ path('app_film_new') }}">Create new</a>
+    <div class="pagination-container">
+        {{ knp_pagination_render(films) }}
+    </div>
+</div>
 {% endblock %}

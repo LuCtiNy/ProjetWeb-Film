@@ -6,21 +6,30 @@ use App\Entity\Film;
 use App\Form\FilmType;
 use App\Repository\FilmRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/tableauAdmin')]
-#[IsGranted('ROLE_ADMIN')]
+#[Route('/admin')]
 final class AdminController extends AbstractController
 {
     #[Route(name: 'app_tableauAdmin_index', methods: ['GET'])]
-    public function index(FilmRepository $filmRepository): Response
+    public function index(Request $request, FilmRepository $filmRepository, PaginatorInterface $paginator): Response
     {
-        return $this->render('/admin/index.html.twig', [
-            'films' => $filmRepository->findAll(),
+        $query = $filmRepository->createQueryBuilder('f')
+            ->orderBy('f.id', 'DESC')
+            ->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            15 // Limite par page pour l'admin
+        );
+
+        return $this->render('admin/index.html.twig', [
+            'films' => $pagination,
         ]);
     }
 

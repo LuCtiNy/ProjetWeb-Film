@@ -1,13 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Film{% endblock %}
+{% block title %}Modifier le Film - Administration{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Film</h1>
+<div class="admin-wrapper">
+    <div class="admin-header">
+        <h1>Modifier le Film</h1>
+        <div class="admin-actions">
+            <a href="{{ path('app_tableauAdmin_index') }}" class="btn-admin" style="background: rgba(255,255,255,0.1); color: white;">Annuler</a>
+            {{ include('admin/_delete_form.html.twig') }}
+        </div>
+    </div>
 
-    {{ include('admin/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_tableauAdmin_index') }}">back to list</a>
-
-    {{ include('admin/_delete_form.html.twig') }}
+    <div class="admin-form-container">
+        {{ include('admin/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+    </div>
+</div>
 {% endblock %}

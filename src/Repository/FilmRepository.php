@@ -13,7 +13,7 @@ class FilmRepository extends ServiceEntityRepository
         parent::__construct($registry, Film::class);
     }
 
-    public function searchFilms(?string $search, ?string $genre, ?string $annee, ?string $sort = 'id_asc')
+    public function searchFilmsQuery(?string $search, ?string $genre, ?string $annee, ?string $tri = 'id_asc')
     {
         $qb = $this->createQueryBuilder('f');
 
@@ -32,7 +32,7 @@ class FilmRepository extends ServiceEntityRepository
                ->setParameter('annee', $annee);
         }
 
-        switch ($sort) {
+        switch ($tri) {
             case 'prix_asc':
                 $qb->orderBy('f.prixLocation', 'ASC');
                 break;
@@ -50,6 +50,6 @@ class FilmRepository extends ServiceEntityRepository
                 break;
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 }

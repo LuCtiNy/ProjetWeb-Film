@@ -21,7 +21,7 @@
                 </div>
                 <div class="prixLocation">
                     <label>Trier par :</label>
-                    <select name="sort" id="prixLocation-select" onchange="this.form.submit()">
+                    <select name="tri" id="prixLocation-select" onchange="this.form.submit()">
                         <option value="id_asc" {{ currentSort == 'id_asc' ? 'selected' : '' }}>Par défaut</option>
                         <option value="prix_asc" {{ currentSort == 'prix_asc' ? 'selected' : '' }}>Prix croissant</option>
                         <option value="prix_desc" {{ currentSort == 'prix_desc' ? 'selected' : '' }}>Prix décroissant</option>
@@ -54,44 +54,50 @@
                     </div>
                 </div>
             </form>
-        {% if films %}
-            <div class="films-grid">
-                {% for film in films %}
-                    <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" style="cursor: pointer;">
-                        {% if tauxPromo > 0 %}
-                            {# Promotion globale pour toute la boutique #}
-                            {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
-                            <div class="film-promo-badge">-{{ tauxPromo|round }}%</div>
-                            <div class="film-price-badge promo">
-                                <span class="prix-original">{{ film.prixLocation }}€</span>
-                                <span class="prix-promo">{{ prixPromo|number_format(2, '.', '') }}€</span>
+            <div class="main-content">
+            {% if films %}
+                <div class="films-grid">
+                    {% for film in films %}
+                        <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" style="cursor: pointer;">
+                            {% if tauxPromo > 0 %}
+                                {# Promotion globale pour toute la boutique #}
+                                {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
+                                <div class="film-promo-badge">-{{ tauxPromo|round }}%</div>
+                                <div class="film-price-badge promo">
+                                    <span class="prix-original">{{ film.prixLocation }}€</span>
+                                    <span class="prix-promo">{{ prixPromo|number_format(2, '.', '') }}€</span>
+                                </div>
+                            {% else %}
+                                {# Pas de promotion aujourd'hui #}
+                                <div class="film-price-badge">{{ film.prixLocation }} €</div>
+                            {% endif %}
+                            <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+                            <div class="film-info">
+                            <div class="film-title-price">
+                                <h2>{{ film.titre }}</h2>
                             </div>
-                        {% else %}
-                            {# Pas de promotion aujourd'hui #}
-                            <div class="film-price-badge">{{ film.prixLocation }} €</div>
-                        {% endif %}
-                        <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
-                        <div class="film-info">
-                        <div class="film-title-price">
-                            <h2>{{ film.titre }}</h2>
-                        </div>
-                        <div class="film-meta">
-                            <span>{{ film.annee }}</span>
-                            <span class="dot">•</span>
-                            {% set genresList = film.genres|split(',') %}
-                            {% for genre in genresList %}
-                                <span class="genre-tag">{{ genre|trim }}</span>
-                            {% endfor %}
-                        </div>
-                        </div>
-                    </div>  
-                {% endfor %}
+                            <div class="film-meta">
+                                <span>{{ film.annee }}</span>
+                                <span class="dot">•</span>
+                                {% set genresList = film.genres|split(',') %}
+                                {% for genre in genresList %}
+                                    <span class="genre-tag">{{ genre|trim }}</span>
+                                {% endfor %}
+                            </div>
+                            </div>
+                        </div>  
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-films">
+                    <p>Aucun film disponible pour le moment.</p>
+                </div>
+            {% endif %}
+            
+            <div class="pagination-container">
+                {{ knp_pagination_render(films) }}
             </div>
-        {% else %}
-            <div class="no-films">
-                <p>Aucun film disponible pour le moment.</p>
             </div>
-        {% endif %}
         </div>
     </section>
 </div>
