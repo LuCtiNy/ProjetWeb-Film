@@ -17,7 +17,10 @@
             <h1>ProjetWeb</h1>
             <nav class="nav-links">
                 <a href="{{ path('app_accueil') }}">Accueil</a>
-                <a href="{{ path('app_catalogue') }}">Catalogue</a>                
+                <a href="{{ path('app_catalogue') }}">Catalogue</a>
+                {% if is_granted('ROLE_USER') %}
+                <a href="{{ path('app_panier_index') }}">Mon Panier</a>
+                {% endif %}
                 {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('app_tableauAdmin_index') }}">Panneau Admin</a>
                 {% endif %}
@@ -29,7 +32,7 @@
                         <div class="dropdown-content">
                             <span class="user-email">{{ app.user.email }}</span>
                             <hr>
-                            <a href="#">Favoris</a>
+                            <a href="{{ path('app_favoris_index') }}">Favoris</a>
                             <a href="{{ path('app_logout') }}" class="logout-link">Déconnexion</a>
                         </div>
                     </div>
@@ -49,7 +52,6 @@
                 const dropdownContent = document.querySelector('.dropdown-content');
 
                 if (btnAccount && dropdownContent) {
-                    // Supprimer l'ancien listener s'il existe (pour éviter les doublons au cas où)
                     const newBtn = btnAccount.cloneNode(true);
                     btnAccount.parentNode.replaceChild(newBtn, btnAccount);
 
@@ -59,11 +61,93 @@
                         newBtn.classList.toggle('active');
                     });
 
-                    // Empêcher la fermeture si on clique dans le menu
                     dropdownContent.addEventListener('click', function(e) {
                         e.stopPropagation();
                     });
                 }
+            }
+
+            function initLikeButtons() {
+                const likeButtons = document.querySelectorAll('.btn-like');
+                
+                likeButtons.forEach(button => {
+                    // Nettoyer d'abord pour éviter les doubles listeners
+                    const oldClone = button.cloneNode(true);
+                    button.parentNode.replaceChild(oldClone, button);
+                    
+                    oldClone.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const url = this.getAttribute('href');
+                        
+                        fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.added) {
+                                this.classList.add('active');
+                            } else {
+                                this.classList.remove('active');
+                                // Si on est sur la page favoris, on peut faire disparaître la carte
+                                if (window.location.pathname.includes('/favoris')) {
+                                    const card = this.closest('.film-card');
+                                    if (card) {
+                                        card.style.opacity = '0';
+                                        card.style.transform = 'scale(0.9)';
+                                        setTimeout(() => {
+                                            card.remove();
+                                            // Si c'était le dernier film, recharger pour afficher le message "vide"
+                                            if (document.querySelectorAll('.film-card').length === 0) {
+                                                window.location.reload();
+                                            }
+                                        }, 400);
+                                    }
+                                }
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+                });
+            }
+
+            function initCartButtons() {
+                const cartButtons = document.querySelectorAll('.btn-add-cart:not(.btn-like)');
+                
+                cartButtons.forEach(button => {
+                    const oldClone = button.cloneNode(true);
+                    button.parentNode.replaceChild(oldClone, button);
+                    
+                    oldClone.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const url = this.getAttribute('href');
+                        
+                        fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                        .then(data => {
+                            if (data.success) {
+                                // Petit effet visuel de succès et ajout permanent
+                                this.classList.add('added');
+                                this.title = "Déjà au panier";
+                            } else if (data.alreadyIn) {
+                                // Déjà dans le panier
+                                this.style.transform = 'translateX(5px)';
+                                setTimeout(() => this.style.transform = 'translateX(0)', 100);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+                });
             }
 
             // Fermer au clic ailleurs (global)
@@ -77,8 +161,14 @@
             });
 
             // Initialiser sur le premier chargement ET sur les changements de page Turbo
-            document.addEventListener('DOMContentLoaded', initDropdown);
-            document.addEventListener('turbo:load', initDropdown);
+            function initAll() {
+                initDropdown();
+                initLikeButtons();
+                initCartButtons();
+            }
+
+            document.addEventListener('DOMContentLoaded', initAll);
+            document.addEventListener('turbo:load', initAll);
         </script>
     </body>
 </html>

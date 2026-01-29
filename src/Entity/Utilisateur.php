@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -23,6 +25,25 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?int $role = null;
+
+    /**
+     * @var Collection<int, Film>
+     */
+    #[ORM\ManyToMany(targetEntity: Film::class, inversedBy: 'utilisateursFavoris')]
+    #[ORM\JoinTable(name: 'favoris')]
+    private Collection $favoris;
+
+    /**
+     * @var Collection<int, Panier>
+     */
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Panier::class, orphanRemoval: true)]
+    private Collection $panier;
+
+    public function __construct()
+    {
+        $this->favoris = new ArrayCollection();
+        $this->panier = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -100,5 +121,67 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
 
+    }
+
+    /**
+     * @return Collection<int, Film>
+     */
+    public function getFavoris(): Collection
+    {
+        return $this->favoris;
+    }
+
+    public function addFavori(Film $favori): static
+    {
+        if (!$this->favoris->contains($favori)) {
+            $this->favoris->add($favori);
+        }
+
+        return $this;
+    }
+
+    public function removeFavori(Film $favori): static
+    {
+        $this->favoris->removeElement($favori);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Panier>
+     */
+    public function getPanier(): Collection
+    {
+        return $this->panier;
+    }
+
+    public function addPanier(Panier $panier): static
+    {
+        if (!$this->panier->contains($panier)) {
+            $this->panier->add($panier);
+            $panier->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removePanier(Panier $panier): static
+    {
+        if ($this->panier->removeElement($panier)) {
+            // set the owning side to null (unless already changed)
+            if ($panier->getUtilisateur() === $this) {
+                $panier->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getPanierFilmIds(): array
+    {
+        return $this->panier->map(fn(Panier $p) => $p->getFilm()->getId())->toArray();
     }
 }

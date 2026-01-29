@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\FilmRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\UX\Turbo\Attribute\Broadcast;
@@ -35,6 +37,17 @@ class Film
 
     #[ORM\Column(length: 255)]
     private ?string $affiche = null;
+
+    /**
+     * @var Collection<int, Utilisateur>
+     */
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class, mappedBy: 'favoris')]
+    private Collection $utilisateursFavoris;
+
+    public function __construct()
+    {
+        $this->utilisateursFavoris = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -121,6 +134,33 @@ class Film
     public function setAffiche(string $affiche): static
     {
         $this->affiche = $affiche;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Utilisateur>
+     */
+    public function getUtilisateursFavoris(): Collection
+    {
+        return $this->utilisateursFavoris;
+    }
+
+    public function addUtilisateursFavori(Utilisateur $utilisateursFavori): static
+    {
+        if (!$this->utilisateursFavoris->contains($utilisateursFavori)) {
+            $this->utilisateursFavoris->add($utilisateursFavori);
+            $utilisateursFavori->addFavori($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUtilisateursFavori(Utilisateur $utilisateursFavori): static
+    {
+        if ($this->utilisateursFavoris->removeElement($utilisateursFavori)) {
+            $utilisateursFavori->removeFavori($this);
+        }
 
         return $this;
     }

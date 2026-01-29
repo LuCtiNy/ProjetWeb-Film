@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Favoris - ProjetWeb{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/catalogue.css') }}">
+    <style>
+        .catalogue-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        /* Version centrée de la grille avec la même largeur que le catalogue */
+        .favoris-content {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .empty-favoris {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .empty-favoris svg {
+            width: 80px;
+            height: 80px;
+            fill: rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-favoris p {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+        }
+        
+        .btn-browse {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-browse:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Version centrée de la grille avec la même largeur que le catalogue */
+        .favoris-main {
+            width: 80%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="catalogue">
+        <section class="catalogue-wrapper">
+            <div class="catalogue-header">
+                <h1>Mes Favoris</h1>
+                <p>{{ films|length }} film{{ films|length > 1 ? 's' : '' }} enregistré{{ films|length > 1 ? 's' : '' }}</p>
+            </div>
+
+            <div class="favoris-content">
+                <div class="favoris-main">
+                    {% if films|length > 0 %}
+                        <div class="films-grid" style="padding: 0;">
+                            {% for film in films %}
+                                <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" id="film-card-{{ film.id }}">
+                                    {% if tauxPromo > 0 %}
+                                        {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
+                                        <div class="film-promo-badge">-{{ tauxPromo|round }}%</div>
+                                        <div class="film-price-badge promo">
+                                            <span class="prix-original">{{ film.prixLocation }}€</span>
+                                            <span class="prix-promo">{{ prixPromo|number_format(2, '.', '') }}€</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="film-price-badge">{{ film.prixLocation }} €</div>
+                                    {% endif %}
+                                    <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+                                    <div class="film-info">
+                                        <div class="film-title-price">
+                                            <h2>{{ film.titre }}</h2>
+                                        </div>
+                                        <div class="film-meta">
+                                            <div class="meta-top">
+                                                <span>{{ film.annee }}</span>
+                                                <span class="dot">•</span>
+                                                <span>{{ film.duree }} min</span>
+                                            </div>
+                                            <div class="meta-genres">
+                                                {% set genresList = film.genres|split(',') %}
+                                                {% for genre in genresList %}
+                                                    <span class="genre-tag">{{ genre|trim }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            
+                                            <div class="meta-action">
+                                                <a href="{{ path('app_like_add', {id: film.id}) }}" 
+                                                class="btn-add-cart btn-like active" 
+                                                onclick="event.stopPropagation();"
+                                                title="Retirer des favoris">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <path d="M12 21.35l-1.45-1.45C5.67 16.11 2 13.28 2 9.5 2 6.42 4.42 4 7.5 4c1.74 0 3.41.81 4.5 2.09C13.09 4.81 14.76 4 16.5 4 19.58 4 22 6.42 22 9.5c0 3.78-3.67 6.61-8.55 10.41L12 21.35z"/>
+                                                    </svg>
+                                                </a>
+                                                {% set isInCart = app.user and film.id in app.user.panierFilmIds %}
+                                                <a href="{{ path('app_panier_add', {id: film.id}) }}" 
+                                                class="btn-add-cart {{ isInCart ? 'added' : '' }}" 
+                                                onclick="event.stopPropagation();"
+                                                title="{{ isInCart ? 'Déjà au panier' : 'Ajouter au panier' }}">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-favoris">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.45C5.67 16.11 2 13.28 2 9.5 2 6.42 4.42 4 7.5 4c1.74 0 3.41.81 4.5 2.09C13.09 4.81 14.76 4 16.5 4 19.58 4 22 6.42 22 9.5c0 3.78-3.67 6.61-8.55 10.41L12 21.35z"/>
+                            </svg>
+                            <p>Vous n'avez pas encore de films en favoris.</p>
+                            <a href="{{ path('app_catalogue') }}" class="btn-browse">Parcourir le catalogue</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

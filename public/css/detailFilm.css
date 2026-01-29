@@ -45,7 +45,6 @@
 .detailFilm-principal-gauche img {
     height: 350px;
     width: 250px;
-    border-radius: 16px;
     overflow: hidden;
     position: relative;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);

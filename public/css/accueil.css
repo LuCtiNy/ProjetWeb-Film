@@ -395,7 +395,7 @@
         grid-template-columns: 1fr;
     }
 
-    .films-grid {
+    .films-grid-accueil {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 1.5em;
     }
@@ -421,7 +421,7 @@
         font-size: 2rem;
     }
 
-    .films-grid {
+    .films-grid-accueil {
         grid-template-columns: 1fr;
     }
 
