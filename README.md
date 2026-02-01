@@ -25,7 +25,7 @@ Avant de commencer, assurez-vous d'avoir installé les outils suivants :
 
 1. **Cloner le projet** :
    ```bash
-   git clone <url-du-depot>
+   git clone https://github.com/LuCtiNy/ProjetWeb-Film.git
    cd ProjetWeb-Film
    ```
 
