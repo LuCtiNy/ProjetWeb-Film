@@ -64,7 +64,7 @@
     background: linear-gradient(135deg, #8b5cf6, #6366f1);
     color: white;
     text-decoration: none;
-    border-radius: 12px;
+    border-radius: 7px;
     font-weight: 600;
     font-size: 1.1rem;
     transition: all 0.3s ease;
@@ -81,7 +81,7 @@
     background: rgba(255, 255, 255, 0.1);
     color: white;
     text-decoration: none;
-    border-radius: 12px;
+    border-radius: 7px;
     font-weight: 600;
     font-size: 1.1rem;
     border: 2px solid rgba(255, 255, 255, 0.3);
@@ -133,8 +133,8 @@
 .offre-card {
     background: linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(20, 20, 20, 0.9));
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
     padding: 2.5em;
+    border-radius: 6px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -288,7 +288,7 @@
     background: rgba(255, 255, 255, 0.05);
     color: white;
     text-decoration: none;
-    border-radius: 10px;
+    border-radius: 7px;
     font-weight: 600;
     border: 2px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;

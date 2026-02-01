@@ -53,8 +53,12 @@ class PanierController extends AbstractController
             'film' => $film
         ]);
 
-        $success = false;
-        if (!$existing) {
+        if ($existing) {
+            $em->remove($existing);
+            $em->flush();
+            $removed = true;
+            $success = false;
+        } else {
             $panier = new Panier();
             $panier->setUtilisateur($user);
             $panier->setFilm($film);
@@ -62,13 +66,14 @@ class PanierController extends AbstractController
             $em->persist($panier);
             $em->flush();
             $success = true;
+            $removed = false;
         }
 
         if ($request->isXmlHttpRequest() || $request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
             return $this->json([
                 'success' => $success,
-                'alreadyIn' => !$success,
-                'message' => $success ? 'Film ajouté au panier !' : 'Ce film est déjà dans votre panier.'
+                'removed' => $removed,
+                'message' => $success ? 'Film ajouté au panier !' : 'Film retiré du panier.'
             ]);
         }
 

@@ -107,6 +107,67 @@ a {
     color: var(--text-light);
 }
 
+/* ========== Cart Icon & Badge ========== */
+.cart-icon-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-gray);
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.cart-icon-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+    transition: fill 0.3s ease;
+}
+
+.cart-icon-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.cart-icon-btn.active {
+    color: var(--primary-color);
+}
+
+.cart-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-dark);
+    padding: 0 4px;
+    animation: badgePop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes badgePop {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 /* ========== User Dropdown ========== */
 .user-dropdown {
     position: relative;
