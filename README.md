@@ -2,7 +2,41 @@
 
 Ce projet est une application web complète (Back-end Symfony + Front-end Twig) permettant de gérer et de louer des films.
 
-## 🚀 Fonctionnalités
+## Installation et Lancement
+
+Pour faire fonctionner le projet, suivez ces étapes :
+
+### 1. Prérequis
+- **PHP 8.2+** avec les extensions suivantes : `intl`, `pdo_pgsql`, `ctype`, `iconv`.
+- **Composer** (ou utiliser le `composer.phar` inclus).
+- **Symfony CLI** (recommandé pour le serveur local).
+- **PostgreSQL** installé et configuré.
+
+### 2. Installation des dépendances
+Le dossier `vendor/` n'est pas inclus dans le dépôt. Vous devez l'installer :
+```bash
+php composer.phar install
+```
+
+### 3. Configuration de la base de données
+Vérifiez ou créez un fichier `.env.local` pour configurer vos accès à PostgreSQL :
+```text
+DATABASE_URL="pgsql://VOTRE_USER:VOTRE_PASSWORD@127.0.0.1:5432/VOTRE_DB_NAME?serverVersion=16&charset=utf8"
+```
+
+### 4. Importation de la base de données
+Importez le fichier `database.sql` fourni.
+```bash
+psql -h 127.0.0.1 -U VOTRE_USER -d VOTRE_DB_NAME -f database.sql
+```
+
+### 5. Lancement du serveur
+```bash
+symfony serve
+```
+Le site sera alors accessible sur `http://127.0.0.1:8000`.
+
+## Fonctionnalités
 
 - **Gestion des films (CRUD)** : Ajouter, modifier et supprimer des films.
 - **Catalogue interactif** : Consultation de la liste des films avec recherche et filtres par genre ou année.
@@ -12,66 +46,5 @@ Ce projet est une application web complète (Back-end Symfony + Front-end Twig) 
 - **Tarification Dynamique** : Les prix de location varient selon le jour de la semaine (ex: tarifs réduits certains jours).
 - **Favoris** : Possibilité de marquer des films comme favoris.
 
-## 🛠️ Prérequis
-
-Avant de commencer, assurez-vous d'avoir installé les outils suivants :
-
-- **PHP** >= 8.2
-- **Composer**
-- **PostgreSQL** (ou tout autre SGBD compatible avec Doctrine)
-- **Symfony CLI** (recommandé pour le serveur local)
-
-## 📥 Installation
-
-1. **Cloner le projet** :
-   ```bash
-   git clone <url-du-depot>
-   cd ProjetWeb-Film
-   ```
-
-2. **Installer les dépendances PHP** :
-   ```bash
-   composer install
-   ```
-
-3. **Configurer l'environnement** :
-   - Copiez le fichier `.env` en `.env.local` :
-     ```bash
-     cp .env .env.local
-     ```
-   - Modifiez la ligne `DATABASE_URL` dans `.env.local` avec vos identifiants de base de données. Exemple pour PostgreSQL :
-     ```text
-     DATABASE_URL="pgsql://utilisateur:motdepasse@127.0.0.1:5432/nom_db?serverVersion=16&charset=utf8"
-     ```
-
-## 🗄️ Configuration de la Base de Données
-
-Une fois la configuration terminée, lancez les commandes suivantes pour initialiser la base :
-
-1. **Créer la base de données** :
-   ```bash
-   php bin/console doctrine:database:create
-   ```
-
-2. **Exécuter les migrations** pour créer les tables :
-   ```bash
-   php bin/console doctrine:migrations:migrate
-   ```
-
-## 🌐 Lancer le Serveur
-
-Pour démarrer l'application localement, vous pouvez utiliser le serveur Symfony :
-
-```bash
-symfony serve
-```
-
-Ou utiliser le serveur intégré de PHP :
-
-```bash
-php -S localhost:8000 -t public
-```
-
-L'application sera alors accessible sur [http://localhost:8000](http://localhost:8000).
-
 ---
+Projet réalisé dans le cadre d'un projet web.
