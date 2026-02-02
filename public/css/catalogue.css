@@ -1,0 +1,221 @@
+.catalogue {
+    padding-top: 10%;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
+    background-image:
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+        linear-gradient(to bottom, #0f0f0f 0%, #050505 100%);
+    text-align: center;
+}
+
+.catalogue-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.catalogue-wrapper h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 1em;
+    color: white;
+}
+
+.catalogue-content {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 3em;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-container {
+    width: 15%;
+    margin-left: 3em;
+    padding: 1.5em;
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 100px;
+    align-self: start;
+    z-index: 100;
+}
+
+.filter-container label {
+    display: block;
+    color: #a1a1aa;
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-bottom: 0.5em;
+    margin-top: 1em;
+}
+
+.filter-container input,
+.filter-container select {
+    width: 100%;
+    padding: 0.8em 1em;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.filter-container select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7em center;
+    background-size: 1.2em;
+    padding-right: 2.5em;
+}
+
+.filter-container select option {
+    background-color: #1a1a1a;
+    color: white;
+}
+
+.filter-container input:focus,
+.filter-container select:focus {
+    border-color: #8b5cf6;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+.filter-container input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+#search-button {
+    width: 100%;
+    margin-top: 0.8em;
+    padding: 0.8em;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+#search-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.searchbar {
+    margin-bottom: 1.5em;
+    padding-bottom: 1.5em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-films {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3em;
+    font-size: 1.2em;
+    color: #a1a1aa;
+}
+
+/* Films Grid - 5 columns for Catalogue */
+.films-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    padding: 0 2em 2em 0;
+}
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 1200px) {
+    .films-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .catalogue-content {
+        flex-direction: column;
+        gap: 2em;
+    }
+
+    .filter-container {
+        width: 90%;
+        margin: 0 auto;
+        position: relative;
+        top: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
+        margin-bottom: 2em;
+    }
+
+    .filter-container label {
+        margin-top: 0;
+    }
+
+    .films-grid {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0 2em;
+    }
+
+    #search-button {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .films-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1em;
+    }
+
+    .catalogue-wrapper h1 {
+        font-size: 2em;
+    }
+
+    .filter-container {
+        grid-template-columns: 1fr;
+    }
+
+    #search-button {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .films-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .catalogue {
+        padding-top: 25%;
+    }
+
+    .filter-container {
+        width: 100%;
+        border-radius: 0;
+    }
+}

@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Films{% endblock %}
+
+{% block body %}
+<style>
+    .films-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .film-card { display: flex; align-items: center; margin-bottom: 1em; }
+    .film-card img { width: 150px; height: 200px; object-fit: cover; margin-right: 1em; }
+    .film-details { flex: 1; }
+    .film-details h2 { margin: 0; }
+    .film-details p { margin: 0; }
+</style>
+
+<div class="films-wrapper">
+    <h1>Liste des films</h1>
+{% for film in films %}
+    <p>Film trouvé : {{ film.titre }}</p>
+{% else %}
+    <p>Aucun film trouvé</p>
+{% endfor %}
+
+    {% for film in films %}
+        <div class="film-card">
+            <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+            <div class="film-details">
+                <h2>{{ film.titre }}</h2>
+                <p><strong>Année :</strong> {{ film.annee }}</p>
+                <p><strong>Durée :</strong> {{ film.duree }}</p>
+                <p><strong>Synopsis :</strong> {{ film.synopsis }}</p>
+                <p><strong>Genres :</strong> {{ film.genres }}</p>
+                <p><strong>Prix location :</strong> {{ film.prixLocation }} €</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

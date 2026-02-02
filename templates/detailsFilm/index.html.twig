@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue de Films{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/detailFilm.css') }}">
+{% endblock %}
+
+{% block body %}
+<section class="detailFilm-principal" style="--bg-image: url('{{ asset('uploads/affiches/' ~ film.affiche) }}')">
+    <div class="detailFilm-principal-gauche">
+        <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+    </div>
+    <div class="detailFilm-principal-droite">
+        <div class="detailFilm-principal-droite-info">
+            <h1 class="film-titre">{{ film.titre }}</h1>
+            <p class="film-metadata">{{ film.annee }} • {{ film.duree }} min • {{ film.genres }}</p>
+            <p class="film-synopsis">{{ film.synopsis }}</p>
+        </div>
+        <div class="detailFilm-principal-bouton">
+            {% if tauxPromo > 0 %}
+                {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
+                <button class="btn-louer">Louer à {{ prixPromo|number_format(2, '.', '') }} €</button>
+            {% else %}
+                <button class="btn-louer">Louer à {{ film.prixLocation }} €</button>
+            {% endif %}
+            <button class="btn-panier">Ajouter au panier</button>
+        </div>
+    </div>
+</section>
+<section class="detailFilm-secondaire">
+
+</section>
+{% endblock %}

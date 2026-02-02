@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        <header class="navbar">
+            <h1>ProjetWeb</h1>
+            <nav class="nav-links">
+                {% set route = app.request.attributes.get('_route') %}
+                <a href="{{ path('app_accueil') }}" class="{{ route == 'app_accueil' ? 'active' : '' }}">Accueil</a>
+                <a href="{{ path('app_catalogue') }}" class="{{ route == 'app_catalogue' or route == 'detailsFilm' ? 'active' : '' }}">Catalogue</a>
+            </nav>
+            <div class="auth-buttons">
+                {% if app.user %}
+                    <div class="user-actions" style="display: flex; align-items: center; gap: 1.5rem;">
+                        <a href="{{ path('app_panier_index') }}" class="cart-icon-btn {{ route == 'app_panier_index' ? 'active' : '' }}" title="Mon Panier">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                            {% set cartCount = app.user.panierFilmIds|length %}
+                            <span class="cart-badge" id="cart-badge" style="{{ cartCount > 0 ? '' : 'display: none;' }}">{{ cartCount }}</span>
+                        </a>
+
+                        <div class="user-dropdown">
+                            <button class="btn-account">Compte</button>
+                            <div class="dropdown-content">
+                                <span class="user-email">{{ app.user.email }}</span>
+                                <hr>
+                                <a href="{{ path('app_favoris_index') }}">Favoris</a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('app_tableauAdmin_index') }}" class="{{ route starts with 'app_tableauAdmin' ? 'active' : '' }}">Panneau Admin</a>
+                                {% endif %}
+                                <a href="{{ path('app_logout') }}" class="logout-link">Déconnexion</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <button onclick="window.location.href = '{{ path('app_login') }}'">Connexion</button>
+                    <button onclick="window.location.href = '{{ path('app_register') }}'">Inscription</button>
+                {% endif %}
+            </div>
+        </header>
+
+        {% block body %}
+        {% endblock %}
+
+        <script>
+            function initDropdown() {
+                const btnAccount = document.querySelector('.btn-account');
+                const dropdownContent = document.querySelector('.dropdown-content');
+
+                if (btnAccount && dropdownContent) {
+                    const newBtn = btnAccount.cloneNode(true);
+                    btnAccount.parentNode.replaceChild(newBtn, btnAccount);
+
+                    newBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        dropdownContent.classList.toggle('show');
+                        newBtn.classList.toggle('active');
+                    });
+
+                    dropdownContent.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                }
+            }
+
+            function initLikeButtons() {
+                const likeButtons = document.querySelectorAll('.btn-like');
+                
+                likeButtons.forEach(button => {
+                    // Nettoyer d'abord pour éviter les doubles listeners
+                    const oldClone = button.cloneNode(true);
+                    button.parentNode.replaceChild(oldClone, button);
+                    
+                    oldClone.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const url = this.getAttribute('href');
+                        
+                        fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.added) {
+                                this.classList.add('active');
+                            } else {
+                                this.classList.remove('active');
+                                // Si on est sur la page favoris, on peut faire disparaître la carte
+                                if (window.location.pathname.includes('/favoris')) {
+                                    const card = this.closest('.film-card');
+                                    if (card) {
+                                        card.style.opacity = '0';
+                                        card.style.transform = 'scale(0.9)';
+                                        setTimeout(() => {
+                                            card.remove();
+                                            // Si c'était le dernier film, recharger pour afficher le message "vide"
+                                            if (document.querySelectorAll('.film-card').length === 0) {
+                                                window.location.reload();
+                                            }
+                                        }, 400);
+                                    }
+                                }
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+                });
+            }
+
+            function updateCartBadge(change) {
+                const badge = document.getElementById('cart-badge');
+                if (!badge) return;
+
+                let count = parseInt(badge.textContent || '0');
+                count += change;
+                
+                if (count < 0) count = 0;
+                
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'flex' : 'none';
+                
+                // Petite animation de pop
+                badge.style.animation = 'none';
+                badge.offsetHeight; /* trigger reflow */
+                badge.style.animation = 'badgePop 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            }
+
+            function initCartButtons() {
+                const cartButtons = document.querySelectorAll('.btn-add-cart:not(.btn-like)');
+                
+                cartButtons.forEach(button => {
+                    const oldClone = button.cloneNode(true);
+                    button.parentNode.replaceChild(oldClone, button);
+                    
+                    oldClone.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const url = this.getAttribute('href');
+                        
+                        fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Petit effet visuel de succès et ajout permanent
+                                this.classList.add('added');
+                                this.title = "Déjà au panier";
+                                updateCartBadge(1);
+                            } else if (data.removed) {
+                                // Retiré du panier
+                                this.classList.remove('added');
+                                this.title = "Ajouter au panier";
+                                updateCartBadge(-1);
+                            } else if (data.alreadyIn) {
+                                // Fallback si pas de toggle (ne devrait plus arriver avec le toggle)
+                                this.style.transform = 'translateX(5px)';
+                                setTimeout(() => this.style.transform = 'translateX(0)', 100);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+                });
+            }
+
+            document.addEventListener('click', function() {
+                const btnAccount = document.querySelector('.btn-account');
+                const dropdownContent = document.querySelector('.dropdown-content');
+                if (dropdownContent && dropdownContent.classList.contains('show')) {
+                    dropdownContent.classList.remove('show');
+                    if(btnAccount) btnAccount.classList.remove('active');
+                }
+            });
+
+            function initAll() {
+                initDropdown();
+                initLikeButtons();
+                initCartButtons();
+            }
+
+            document.addEventListener('DOMContentLoaded', initAll);
+            document.addEventListener('turbo:load', initAll);
+        </script>
+    </body>
+</html>

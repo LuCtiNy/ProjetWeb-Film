@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue de Films{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/catalogue.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="catalogue">
+    <section class="catalogue-wrapper">
+        <div class="catalogue-header">
+            <h1>Catalogue de Films</h1>
+        </div>
+        <div class="catalogue-content">
+            <form action="{{ path('app_catalogue') }}" method="GET" class="filter-container">
+                <div class="searchbar">
+                    <input type="text" name="search" id="search-input" placeholder="Rechercher un film..." value="{{ currentSearch }}">
+                    <button type="submit" id="search-button">Rechercher</button>
+                </div>
+                <div class="prixLocation">
+                    <label>Trier par :</label>
+                    <select name="tri" id="prixLocation-select" onchange="this.form.submit()">
+                        <option value="id_asc" {{ currentSort == 'id_asc' ? 'selected' : '' }}>Par défaut</option>
+                        <option value="prix_asc" {{ currentSort == 'prix_asc' ? 'selected' : '' }}>Prix croissant</option>
+                        <option value="prix_desc" {{ currentSort == 'prix_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                        <option value="date_desc" {{ currentSort == 'date_desc' ? 'selected' : '' }}>Plus récents</option>
+                        <option value="alpha_asc" {{ currentSort == 'alpha_asc' ? 'selected' : '' }}>Alphabétique</option>
+                    </select>
+                </div>
+                <div id="genre-annee-prix">
+                    <div class="genre-container">
+                        <label>Genre</label>
+                        <select name="genre" id="genre-select" onchange="this.form.submit()">
+                            <option value="">Tous les genres</option>
+                            {% if genres %}
+                                {% for genre in genres %}
+                                    <option value="{{ genre }}" {{ currentGenre == genre ? 'selected' : '' }}>{{ genre }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="annee-container">
+                        <label>Année</label>
+                        <select name="annee" id="annee-select" onchange="this.form.submit()">
+                            <option value="">Toutes les années</option>
+                            {% if annees %}
+                                {% for annee in annees %}
+                                    <option value="{{ annee }}" {{ currentAnnee == annee ? 'selected' : '' }}>{{ annee }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <div class="main-content">
+            {% if films %}
+                <div class="films-grid">
+                    {% for film in films %}
+                        <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" style="cursor: pointer;">
+                            {% if tauxPromo > 0 %}
+                                {# Promotion globale pour toute la boutique #}
+                                {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
+                                <div class="film-promo-badge">-{{ tauxPromo|round }}%</div>
+                                <div class="film-price-badge promo">
+                                    <span class="prix-original">{{ film.prixLocation }}€</span>
+                                    <span class="prix-promo">{{ prixPromo|number_format(2, '.', '') }}€</span>
+                                </div>
+                            {% else %}
+                                {# Pas de promotion aujourd'hui #}
+                                <div class="film-price-badge">{{ film.prixLocation }} €</div>
+                            {% endif %}
+                            <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+                            <div class="film-info">
+                            <div class="film-title-price">
+                                <h2>{{ film.titre }}</h2>
+                            </div>
+                            <div class="film-meta">
+                                <div class="meta-top">
+                                    <span>{{ film.annee }}</span>
+                                    <span class="dot">•</span>
+                                    <span>{{ film.duree }} min</span>
+                                </div>
+                                <div class="meta-genres">
+                                    {% set genresList = film.genres|split(',') %}
+                                    {% for genre in genresList %}
+                                        <span class="genre-tag">{{ genre|trim }}</span>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="meta-action">
+                                    {% set isFavorite = app.user and film in app.user.favoris %}
+                                    <a href="{{ path('app_like_add', {id: film.id}) }}" 
+                                       class="btn-add-cart btn-like {{ isFavorite ? 'active' : '' }}" 
+                                       onclick="event.stopPropagation();"
+                                       title="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M12 21.35l-1.45-1.45C5.67 16.11 2 13.28 2 9.5 2 6.42 4.42 4 7.5 4c1.74 0 3.41.81 4.5 2.09C13.09 4.81 14.76 4 16.5 4 19.58 4 22 6.42 22 9.5c0 3.78-3.67 6.61-8.55 10.41L12 21.35z"/>
+                                        </svg>
+                                    </a>
+                                    {# Bouton Panier visible au survol #}
+                                    {% set isInCart = app.user and film.id in app.user.panierFilmIds %}
+                                    <a href="{{ path('app_panier_add', {id: film.id}) }}" 
+                                       class="btn-add-cart {{ isInCart ? 'added' : '' }}" 
+                                       onclick="event.stopPropagation();"
+                                       title="{{ isInCart ? 'Déjà au panier' : 'Ajouter au panier' }}">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                            </div>
+                        </div>  
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-films">
+                    <p>Aucun film disponible pour le moment.</p>
+                </div>
+            {% endif %}
+            
+            <div class="pagination-container">
+                {{ knp_pagination_render(films) }}
+            </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

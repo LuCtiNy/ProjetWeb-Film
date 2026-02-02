@@ -1,0 +1,228 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier - ProjetWeb{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .cart-wrapper {
+            max-width: 1200px;
+            margin: 6em auto 4em;
+            padding: 0 5%;
+        }
+
+        .cart-header {
+            margin-bottom: 3em;
+            text-align: center;
+        }
+
+        .cart-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5em;
+        }
+
+        .cart-items {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2em;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 120px 1fr auto auto;
+            align-items: center;
+            gap: 2em;
+            padding: 1.5em 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-img img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .cart-item-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5em;
+            color: white;
+        }
+
+        .cart-item-info p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .cart-item-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .cart-item-remove a {
+            color: #ef4444;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item-remove a:hover {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .cart-summary {
+            margin-top: 3em;
+            padding: 2.5em;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-total {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .summary-total span {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin-left: 0.5em;
+        }
+
+        .btn-checkout {
+            padding: 1.2em 3em;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.6);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 5em 0;
+        }
+
+        .empty-cart p {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            margin-bottom: 2em;
+        }
+
+        .btn-browse {
+            display: inline-block;
+            padding: 1em 2.5em;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-browse:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-right: 0.5em;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .cart-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .cart-item-img { width: 150px; margin: 0 auto; }
+            .cart-summary { flex-direction: column; gap: 2em; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="cart-wrapper">
+    <div class="cart-header">
+        <h1>Mon Panier</h1>
+        <p style="color: var(--text-gray)">Retrouvez ici les films que vous avez sélectionnés.</p>
+    </div>
+
+    {% if items is not empty %}
+        <div class="cart-items">
+            {% for item in items %}
+                {% set film = item.film %}
+                <div class="cart-item">
+                    <div class="cart-item-img">
+                        <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+                    </div>
+                    <div class="cart-item-info">
+                        <h3>{{ film.titre }}</h3>
+                        <p>{{ film.annee }} • {{ film.genres }}</p>
+                        <p>Quantité : {{ item.quantite }}</p>
+                    </div>
+                    <div class="cart-item-price">
+                        {% if tauxPromo > 0 %}
+                            {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
+                            <span class="original-price">{{ film.prixLocation }}€</span>
+                            <span>{{ (prixPromo * item.quantite)|number_format(2, '.', '') }}€</span>
+                        {% else %}
+                            <span>{{ (film.prixLocation * item.quantite)|number_format(2, '.', '') }} €</span>
+                        {% endif %}
+                    </div>
+                    <div class="cart-item-remove">
+                        <a href="{{ path('app_panier_remove', {id: item.id}) }}">Retirer</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-total">
+                Total à payer : <span>{{ total|number_format(2, '.', '') }} €</span>
+            </div>
+            <a href="#" class="btn-checkout">Procéder au paiement</a>
+        </div>
+    {% else %}
+        <div class="cart-items empty-cart">
+            <p>Votre panier est vide pour le moment.</p>
+            <a href="{{ path('app_catalogue') }}" class="btn-browse">Parcourir le catalogue</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

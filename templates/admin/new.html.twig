@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Film - Administration{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-wrapper">
+    <div class="admin-header">
+        <h1>Ajouter un Nouveau Film</h1>
+        <a href="{{ path('app_tableauAdmin_index') }}" class="btn-admin" style="background: rgba(255,255,255,0.1); color: white;">Annuler</a>
+    </div>
+
+    <div class="admin-form-container">
+        {{ include('admin/_form.html.twig') }}
+    </div>
+</div>
+{% endblock %}

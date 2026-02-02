@@ -1,0 +1,167 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Location de Films{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/accueil.css') }}">
+{% endblock %}
+
+{% block body %}
+
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Découvrez Notre Collection de Films</h1>
+        <p class="hero-subtitle">Location et vente de DVD, Blu-ray et 4K Ultra HD</p>
+        <div class="hero-cta">
+            <a href="{{ path('app_catalogue') }}" class="btn-primary">Découvrir le catalogue</a>
+            <a href="#nouveautes" class="btn-secondary">Voir les nouveautés</a>
+        </div>
+    </div>
+</section>
+
+<section class="offres-speciales">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">🔥 Offres Spéciales</h2>
+            <p class="section-subtitle">Profitez de nos promotions exceptionnelles</p>
+        </div>
+        
+        <div class="offres-grid">
+            <div class="offre-card promo-highlight">
+                <div class="offre-badge">-30%</div>
+                <div class="offre-icon">🎬</div>
+                <h3>Promo du Week-end</h3>
+                <p>Tous les films du catalogue à -30%</p>
+            </div>
+            
+            <div class="offre-card">
+                <div class="offre-badge">-10%</div>
+                <div class="offre-icon">🎬</div>
+                <h3>Promo du Lundi</h3>
+                <p>Tous les films du catalogue à -10%</p>
+            </div>
+            
+            <div class="offre-card">
+                <div class="offre-badge">-20%</div>
+                <div class="offre-icon">🎬</div>
+                <h3>Promo du Mardi</h3>
+                <p>Tous les films du catalogue à -20%</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="nouveautes" id="nouveautes">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Nouveautés</h2>
+            <p class="section-subtitle">Les dernières sorties DVD, Blu-ray et 4K</p>
+        </div>
+        
+        {% if films %}
+        <div class="films-grid-accueil">
+            {% for film in films %}
+                    <div onclick="window.location.href = '{{ path('detailsFilm', { 'id': film.id }) }}'" class="film-card" style="cursor: pointer;">
+                        {% if tauxPromo > 0 %}
+                            {# Promotion globale pour toute la boutique #}
+                            {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
+                            <div class="film-promo-badge">-{{ tauxPromo|round }}%</div>
+                            <div class="film-price-badge promo">
+                                <span class="prix-original">{{ film.prixLocation }}€</span>
+                                <span class="prix-promo">{{ prixPromo|number_format(2, '.', '') }}€</span>
+                            </div>
+                        {% else %}
+                            {# Pas de promotion aujourd'hui #}
+                            <div class="film-price-badge">{{ film.prixLocation }} €</div>
+                        {% endif %}
+                        
+                        <img src="{{ asset('uploads/affiches/' ~ film.affiche) }}" alt="{{ film.titre }}">
+                        <div class="film-info">
+                            <div class="film-title-price">
+                                <h2>{{ film.titre }}</h2>
+                            </div>
+                            <div class="film-meta">
+                                <div class="meta-top">
+                                    <span>{{ film.annee }}</span>
+                                    <span class="dot">•</span>
+                                    <span>{{ film.duree }} min</span>
+                                </div>
+                                <div class="meta-genres">
+                                    {% set genresList = film.genres|split(',') %}
+                                    {% for genre in genresList %}
+                                        <span class="genre-tag">{{ genre|trim }}</span>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="meta-action">
+                                    {% set isFavorite = app.user and film in app.user.favoris %}
+                                    <a href="{{ path('app_like_add', {id: film.id}) }}" 
+                                       class="btn-add-cart btn-like {{ isFavorite ? 'active' : '' }}" 
+                                       onclick="event.stopPropagation();"
+                                       title="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M12 21.35l-1.45-1.45C5.67 16.11 2 13.28 2 9.5 2 6.42 4.42 4 7.5 4c1.74 0 3.41.81 4.5 2.09C13.09 4.81 14.76 4 16.5 4 19.58 4 22 6.42 22 9.5c0 3.78-3.67 6.61-8.55 10.41L12 21.35z"/>
+                                        </svg>
+                                    </a>
+                                    {# Bouton Panier visible au survol #}
+                                    {% set isInCart = app.user and film.id in app.user.panierFilmIds %}
+                                    <a href="{{ path('app_panier_add', {id: film.id}) }}" 
+                                       class="btn-add-cart {{ isInCart ? 'added' : '' }}" 
+                                       onclick="event.stopPropagation();"
+                                       title="{{ isInCart ? 'Déjà au panier' : 'Ajouter au panier' }}">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+{% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="section-footer">
+            <a href="{{ path('app_catalogue') }}" class="btn-voir-plus">Voir tout le catalogue →</a>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>À propos</h4>
+                <ul>
+                    <li><a href="#">Notre catalogue</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Légal</h4>
+                <ul>
+                    <li><a href="#">CGV</a></li>
+                    <li><a href="#">Mentions légales</a></li>
+                    <li><a href="#">Politique de confidentialité</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="#">Nous contacter</a></li>
+                    <li><a href="#">Service client</a></li>
+                    <li> Contact@projetweb.fr</li>
+                    <li>📞 01 23 45 67 89</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 ProjetWeb - Tous droits réservés</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}
