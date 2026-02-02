@@ -27,7 +27,7 @@ final class AdminController extends AbstractController
         $pagination = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            15 // Limite par page pour l'admin
+            15
         );
 
         return $this->render('admin/index.html.twig', [

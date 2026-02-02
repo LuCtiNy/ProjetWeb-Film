@@ -25,7 +25,7 @@ class PanierRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->andWhere('p.utilisateur = :user')
             ->setParameter('user', $user)
-            ->orderBy('p.dateAjout', 'DESC')
+            ->orderBy('p.dateCreation', 'DESC')
             ->getQuery()
             ->getResult();
     }

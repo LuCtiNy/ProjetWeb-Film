@@ -93,24 +93,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // ========== Méthodes requises par UserInterface ==========
-
-    /**
-     * Retourne l'identifiant unique de l'utilisateur (email dans notre cas)
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * Retourne les rôles de l'utilisateur
-     */
     public function getRoles(): array
     {
         $roles = ['ROLE_USER'];
 
-        // Si role = 2, c'est un admin
         if ($this->role === 2) {
             $roles[] = 'ROLE_ADMIN';
         }
@@ -177,11 +168,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return int[]
-     */
     public function getPanierFilmIds(): array
     {
-        return $this->panier->map(fn(Panier $p) => $p->getFilm()->getId())->toArray();
+        $panierActif = $this->panier->filter(fn(Panier $p) => $p->getStatut() === 'actif')->first();
+        
+        if (!$panierActif) {
+            return [];
+        }
+
+        return $panierActif->getPanierFilms()->map(fn(PanierFilm $pf) => $pf->getFilm()->getId())->toArray();
     }
 }

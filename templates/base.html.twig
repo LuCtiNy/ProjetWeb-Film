@@ -181,7 +181,6 @@
                 });
             }
 
-            // Fermer au clic ailleurs (global)
             document.addEventListener('click', function() {
                 const btnAccount = document.querySelector('.btn-account');
                 const dropdownContent = document.querySelector('.dropdown-content');
@@ -191,7 +190,6 @@
                 }
             });
 
-            // Initialiser sur le premier chargement ET sur les changements de page Turbo
             function initAll() {
                 initDropdown();
                 initLikeButtons();

@@ -194,14 +194,15 @@
                     <div class="cart-item-info">
                         <h3>{{ film.titre }}</h3>
                         <p>{{ film.annee }} • {{ film.genres }}</p>
+                        <p>Quantité : {{ item.quantite }}</p>
                     </div>
                     <div class="cart-item-price">
                         {% if tauxPromo > 0 %}
                             {% set prixPromo = film.prixLocation * (1 - tauxPromo / 100) %}
                             <span class="original-price">{{ film.prixLocation }}€</span>
-                            <span>{{ prixPromo|number_format(2, '.', '') }}€</span>
+                            <span>{{ (prixPromo * item.quantite)|number_format(2, '.', '') }}€</span>
                         {% else %}
-                            <span>{{ film.prixLocation }} €</span>
+                            <span>{{ (film.prixLocation * item.quantite)|number_format(2, '.', '') }} €</span>
                         {% endif %}
                     </div>
                     <div class="cart-item-remove">

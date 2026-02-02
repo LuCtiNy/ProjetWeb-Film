@@ -22,14 +22,11 @@ class AuthController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer le mot de passe en clair du formulaire
             $plainPassword = $form->get('password')->getData();
             
-            // Hasher le mot de passe avec Symfony Security
             $hashedPassword = $passwordHasher->hashPassword($utilisateur, $plainPassword);
             $utilisateur->setPassword($hashedPassword);
             
-            // Définir un rôle par défaut (1 = utilisateur normal)
             $utilisateur->setRole(1);
 
             $entityManager->persist($utilisateur);
@@ -48,15 +45,12 @@ class AuthController extends AbstractController
     #[Route('/connexion', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // Si l'utilisateur est déjà connecté, rediriger vers l'accueil
         if ($this->getUser()) {
             return $this->redirectToRoute('app_accueil');
         }
 
-        // Récupérer l'erreur de connexion s'il y en a une
         $error = $authenticationUtils->getLastAuthenticationError();
         
-        // Dernier email saisi par l'utilisateur
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('auth/login.html.twig', [
@@ -68,7 +62,5 @@ class AuthController extends AbstractController
     #[Route('/deconnexion', name: 'app_logout')]
     public function logout(): void
     {
-        // Cette méthode peut rester vide, Symfony gère la déconnexion automatiquement
-        // si configuré dans security.yaml
     }
 }

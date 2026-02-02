@@ -300,9 +300,6 @@
     transform: translateY(-2px);
 }
 
-/* ===========================
-   FOOTER
-   =========================== */
 
 .footer {
     background: linear-gradient(to bottom, #0a0a0a, #000000);
@@ -369,9 +366,6 @@
     margin-right: 0.5em;
 }
 
-/* ===========================
-   RESPONSIVE
-   =========================== */
 
 @media (max-width: 768px) {
     .hero-title {

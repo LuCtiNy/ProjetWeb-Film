@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Film;
 use App\Entity\Panier;
+use App\Entity\PanierFilm;
 use App\Repository\FilmRepository;
+use App\Repository\PanierFilmRepository;
 use App\Repository\PanierRepository;
 use App\Repository\PromotionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,9 +23,9 @@ class PanierController extends AbstractController
     public function index(PanierRepository $panierRepository, PromotionRepository $promotionRepository): Response
     {
         $user = $this->getUser();
-        $items = $panierRepository->findByUser($user);
+        $panier = $panierRepository->findOneBy(['utilisateur' => $user, 'statut' => 'actif']);
+        $items = $panier ? $panier->getPanierFilms() : [];
 
-        // Récupération de la promo du jour
         $jourActuel = (int) date('N');
         $promotion = $promotionRepository->find($jourActuel);
         $tauxPromo = $promotion ? $promotion->getTauxpromo() : 0;
@@ -32,10 +34,11 @@ class PanierController extends AbstractController
         foreach ($items as $item) {
             $prixBase = $item->getFilm()->getPrixLocation();
             $prixFinal = $prixBase * (1 - $tauxPromo / 100);
-            $total += $prixFinal;
+            $total += ($prixFinal * $item->getQuantite());
         }
 
         return $this->render('panier/index.html.twig', [
+            'panier' => $panier,
             'items' => $items,
             'total' => $total,
             'tauxPromo' => $tauxPromo
@@ -43,13 +46,20 @@ class PanierController extends AbstractController
     }
 
     #[Route('/panier/add/{id}', name: 'app_panier_add')]
-    public function add(Film $film, EntityManagerInterface $em, PanierRepository $panierRepository, Request $request): Response
+    public function add(Film $film, EntityManagerInterface $em, PanierRepository $panierRepository, PanierFilmRepository $pfRepo, Request $request): Response
     {
         $user = $this->getUser();
 
-        // Vérifier si le film est déjà dans le panier
-        $existing = $panierRepository->findOneBy([
-            'utilisateur' => $user,
+        $panier = $panierRepository->findOneBy(['utilisateur' => $user, 'statut' => 'actif']);
+        if (!$panier) {
+            $panier = new Panier();
+            $panier->setUtilisateur($user);
+            $panier->setStatut('actif');
+            $em->persist($panier);
+        }
+
+        $existing = $pfRepo->findOneBy([
+            'panier' => $panier,
             'film' => $film
         ]);
 
@@ -59,11 +69,12 @@ class PanierController extends AbstractController
             $removed = true;
             $success = false;
         } else {
-            $panier = new Panier();
-            $panier->setUtilisateur($user);
-            $panier->setFilm($film);
+            $pf = new PanierFilm();
+            $pf->setPanier($panier);
+            $pf->setFilm($film);
+            $pf->setQuantite(1);
 
-            $em->persist($panier);
+            $em->persist($pf);
             $em->flush();
             $success = true;
             $removed = false;
@@ -81,14 +92,13 @@ class PanierController extends AbstractController
     }
 
     #[Route('/panier/remove/{id}', name: 'app_panier_remove')]
-    public function remove(Panier $panierItem, EntityManagerInterface $em): Response
+    public function remove(PanierFilm $panierFilm, EntityManagerInterface $em): Response
     {
-        // Vérifier que l'item appartient bien à l'utilisateur
-        if ($panierItem->getUtilisateur() !== $this->getUser()) {
-            throw $this->createAccessDeniedException("Ce panier ne vous appartient pas.");
+        if ($panierFilm->getPanier()->getUtilisateur() !== $this->getUser()) {
+            throw $this->createAccessDeniedException("Cet article ne vous appartient pas.");
         }
 
-        $em->remove($panierItem);
+        $em->remove($panierFilm);
         $em->flush();
 
         return $this->redirectToRoute('app_panier_index');

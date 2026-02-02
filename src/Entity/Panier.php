@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\PanierRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -18,16 +20,22 @@ class Panier
     #[ORM\JoinColumn(nullable: false, name: 'utilisateur_id')]
     private ?Utilisateur $utilisateur = null;
 
-    #[ORM\ManyToOne(targetEntity: Film::class)]
-    #[ORM\JoinColumn(nullable: false, name: 'film_id')]
-    private ?Film $film = null;
+    #[ORM\Column(length: 255)]
+    private ?string $statut = "actif";
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $dateAjout = null;
+    private ?\DateTimeImmutable $dateCreation = null;
+
+    /**
+     * @var Collection<int, PanierFilm>
+     */
+    #[ORM\OneToMany(mappedBy: 'panier', targetEntity: PanierFilm::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    private Collection $panierFilms;
 
     public function __construct()
     {
-        $this->dateAjout = new \DateTimeImmutable();
+        $this->dateCreation = new \DateTimeImmutable();
+        $this->panierFilms = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -47,26 +55,56 @@ class Panier
         return $this;
     }
 
-    public function getFilm(): ?Film
+    public function getStatut(): ?string
     {
-        return $this->film;
+        return $this->statut;
     }
 
-    public function setFilm(?Film $film): static
+    public function setStatut(string $statut): static
     {
-        $this->film = $film;
+        $this->statut = $statut;
 
         return $this;
     }
 
-    public function getDateAjout(): ?\DateTimeImmutable
+    public function getDateCreation(): ?\DateTimeImmutable
     {
-        return $this->dateAjout;
+        return $this->dateCreation;
     }
 
-    public function setDateAjout(\DateTimeImmutable $dateAjout): static
+    public function setDateCreation(\DateTimeImmutable $dateCreation): static
     {
-        $this->dateAjout = $dateAjout;
+        $this->dateCreation = $dateCreation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PanierFilm>
+     */
+    public function getPanierFilms(): Collection
+    {
+        return $this->panierFilms;
+    }
+
+    public function addPanierFilm(PanierFilm $panierFilm): static
+    {
+        if (!$this->panierFilms->contains($panierFilm)) {
+            $this->panierFilms->add($panierFilm);
+            $panierFilm->setPanier($this);
+        }
+
+        return $this;
+    }
+
+    public function removePanierFilm(PanierFilm $panierFilm): static
+    {
+        if ($this->panierFilms->removeElement($panierFilm)) {
+            // set the owning side to null (unless already changed)
+            if ($panierFilm->getPanier() === $this) {
+                $panierFilm->setPanier(null);
+            }
+        }
 
         return $this;
     }

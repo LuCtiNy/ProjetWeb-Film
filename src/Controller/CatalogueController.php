@@ -20,17 +20,14 @@ final class CatalogueController extends AbstractController
         $annee = $request->query->get('annee');
         $tri = $request->query->get('tri', 'id_asc');
 
-        // On récupère d'abord TOUS les films pour alimenter les listes déroulantes (genres et années)
         $allFilms = $filmRepository->findAll();
         
-        // On récupère la REQUETE (et non les résultats) pour la pagination
         $query = $filmRepository->searchFilmsQuery($search, $genre, $annee, $tri);
 
-        // On pagine les résultats
         $pagination = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1),
-            20 // Limite par page
+            20
         );
 
         $jourActuel = (int) date('N');

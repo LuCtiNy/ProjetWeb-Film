@@ -18,7 +18,6 @@ final class FavorisController extends AbstractController
     #[Route('/favoris', name: 'app_favoris_index')]
     public function index(PromotionRepository $promotionRepository): Response
     {
-        /** @var Utilisateur $user */
         $user = $this->getUser();
         
         $jourActuel = (int) date('N');
@@ -34,7 +33,6 @@ final class FavorisController extends AbstractController
     #[Route('/favoris/add/{id}', name: 'app_like_add')]
     public function add(Film $film, EntityManagerInterface $entityManager, Request $request): Response
     {
-        /** @var Utilisateur $user */
         $user = $this->getUser();
         
         $isAdded = false;
@@ -47,7 +45,6 @@ final class FavorisController extends AbstractController
 
         $entityManager->flush();
 
-        // Si c'est une requête AJAX (XMLHttpRequest)
         if ($request->isXmlHttpRequest() || $request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
             return $this->json([
                 'added' => $isAdded,
