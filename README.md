@@ -58,12 +58,6 @@ Une fois la configuration terminée, lancez les commandes suivantes pour initial
    php bin/console doctrine:migrations:migrate
    ```
 
-3. **(Optionnel) Charger les données d'exemple** :
-   *(Si des fixtures sont disponibles)*
-   ```bash
-   php bin/console doctrine:fixtures:load
-   ```
-
 ## 🌐 Lancer le Serveur
 
 Pour démarrer l'application localement, vous pouvez utiliser le serveur Symfony :
