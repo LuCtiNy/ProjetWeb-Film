@@ -168,3 +168,9 @@ ALTER TABLE ONLY public.favoris
     ADD CONSTRAINT fk_8933c432fb88e14f FOREIGN KEY (utilisateur_id) REFERENCES public.utilisateur(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.promotion
     ADD CONSTRAINT fk_c11d7dd19d82865 FOREIGN KEY (idjour) REFERENCES public.jours(idjour);
+
+-- Synchronize sequences after Data insertion
+SELECT setval(pg_get_serial_sequence('public.film', 'id'), COALESCE(MAX(id), 1)) FROM public.film;
+SELECT setval(pg_get_serial_sequence('public.utilisateur', 'id'), COALESCE(MAX(id), 1)) FROM public.utilisateur;
+SELECT setval(pg_get_serial_sequence('public.panier', 'id'), COALESCE(MAX(id), 1)) FROM public.panier;
+SELECT setval(pg_get_serial_sequence('public.panier_film', 'id'), COALESCE(MAX(id), 1)) FROM public.panier_film;
