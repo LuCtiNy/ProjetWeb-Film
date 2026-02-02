@@ -46,5 +46,12 @@ Le site sera alors accessible sur `http://127.0.0.1:8000`.
 - **Tarification Dynamique** : Les prix de location varient selon le jour de la semaine (ex: tarifs réduits certains jours).
 - **Favoris** : Possibilité de marquer des films comme favoris.
 
+## Accès administrateur
+
+Identifiant : admin@admin.test
+Mot de passe : adminadmin
+
+ou alors vous pouvez créer un nouveau compte via le formulaire d'inscription et de changer le rôle de l'utilisateur dans la base de données (le mettre à 2 pour avoir l'accès administrateur).
+
 ---
 Projet réalisé dans le cadre d'un projet web.
